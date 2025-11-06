@@ -19,9 +19,18 @@ public class Gun : MonoBehaviour
 
     [Header("GunState")]
     [SerializeField]GunState gunstate = GunState.normal;
+
+    [Header("Capsule Prefabs")]
+    [SerializeField] GameObject redCapsulePrefab;
+    [SerializeField] GameObject greenCapsulePrefab;
+    [SerializeField] GameObject blueCapsulePrefab;
+    [SerializeField] GameObject normalCapsulePrefab;
+    [SerializeField] Transform capsuleSlot;
+    [SerializeField] Material normalMat;
     [SerializeField] Material redMat;
     [SerializeField] Material greenMat;
     [SerializeField] Material blueMat;
+
 
     private void OnEnable()
     {
@@ -55,6 +64,7 @@ public class Gun : MonoBehaviour
                 if(gunstate == GunState.red && hit.collider.name.Contains("Red")) Destroy(hit.collider.gameObject);
                 else if(gunstate == GunState.green && hit.collider.name.Contains("Green")) Destroy(hit.collider.gameObject);
                 else if(gunstate == GunState.blue && hit.collider.name.Contains("Blue")) Destroy(hit.collider.gameObject);
+                else if(gunstate == GunState.normal && hit.collider.name.Contains("Normal")) Destroy(hit.collider.gameObject);
             }
 
             GetComponent<CinemachineImpulseSource>().GenerateImpulse();
@@ -67,19 +77,52 @@ public class Gun : MonoBehaviour
         {
             if (other.gameObject.name.Contains("Red"))
             {
+                Destroy(other.gameObject);
+                CapsulePick.Instance.pickedObject = Instantiate(GetCapsulePrefab(),capsuleSlot);
                 gunstate = GunState.red;
                 GetComponent<MeshRenderer>().material = redMat;
+                CapsulePick.Instance.OnRelease(new InputAction.CallbackContext());
             }
             else if (other.gameObject.name.Contains("Green"))
             {
+                Destroy(other.gameObject);
+                CapsulePick.Instance.pickedObject = Instantiate(GetCapsulePrefab(), capsuleSlot);
                 gunstate = GunState.green;
                 GetComponent<MeshRenderer>().material = greenMat;
+                CapsulePick.Instance.OnRelease(new InputAction.CallbackContext());
             }
             else if (other.gameObject.name.Contains("Blue"))
             {
+                Destroy(other.gameObject);
+                CapsulePick.Instance.pickedObject = Instantiate(GetCapsulePrefab(), capsuleSlot);
                 gunstate = GunState.blue;
                 GetComponent<MeshRenderer>().material = blueMat;
+                CapsulePick.Instance.OnRelease(new InputAction.CallbackContext());
             }
+            else if (other.gameObject.name.Contains("Normal"))
+            {
+                Destroy(other.gameObject);
+                CapsulePick.Instance.pickedObject = Instantiate(GetCapsulePrefab(), capsuleSlot);
+                gunstate = GunState.normal;
+                GetComponent<MeshRenderer>().material = normalMat;
+                CapsulePick.Instance.OnRelease(new InputAction.CallbackContext());
+            }
+        }
+    }
+
+    public GameObject GetCapsulePrefab()
+    {
+        switch (gunstate)
+        {
+            case GunState.red:
+                return redCapsulePrefab;
+            case GunState.green:
+                return greenCapsulePrefab;
+            case GunState.blue:
+                return blueCapsulePrefab;
+            case GunState.normal:
+            default:
+                return normalCapsulePrefab;
         }
     }
 }

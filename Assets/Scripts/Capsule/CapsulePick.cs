@@ -1,17 +1,25 @@
 
+using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class CapsulePick : MonoBehaviour
 {
+    public static CapsulePick Instance;
+
     [Header("Pick")]
     [SerializeField] InputActionReference mouseLeftAction;
+    [SerializeField] private Gun gun;
 
+    public GameObject pickedObject;
     private Camera mainCamera;
-    private GameObject pickedObject;
-    private Vector3 offset;
     private float initialDistance;
     private Vector3 originalPosition;
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     private void OnEnable()
     {
@@ -37,9 +45,8 @@ public class CapsulePick : MonoBehaviour
         if (pickedObject != null && mouseLeftAction.action.IsPressed())
         {
             Ray mouseRay = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-            Vector3 worldPoint = mouseRay.GetPoint(initialDistance);
-            Vector3 newPosition = worldPoint + offset;
-            pickedObject.transform.position = new Vector3(newPosition.x, newPosition.y, newPosition.z);
+            Vector3 newPosition = mouseRay.GetPoint(initialDistance);
+            pickedObject.transform.position = newPosition;
         }
     }
 
@@ -53,14 +60,11 @@ public class CapsulePick : MonoBehaviour
                 pickedObject = hit.collider.gameObject;
                 originalPosition = pickedObject.transform.position;
                 initialDistance = Vector3.Distance(mainCamera.transform.position, pickedObject.transform.position);
-                Ray mouseRay = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-                Vector3 worldPoint = mouseRay.GetPoint(initialDistance);
-                offset = pickedObject.transform.position - worldPoint;
             }
         }
     }
 
-    private void OnRelease(InputAction.CallbackContext context)
+    public void OnRelease(InputAction.CallbackContext context)
     {
         if (pickedObject != null)
         {
