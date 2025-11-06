@@ -9,10 +9,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float jumpForce = 3.0f;
     [SerializeField] InputActionReference move;
     [SerializeField] InputActionReference jump;
+    [SerializeField] InputActionReference pick;
     CharacterController cc;
 
     [Header("Camera Controll")]
     [SerializeField] CinemachineCamera playerCam;
+
+    [Header("Pick Controll")]
+    [SerializeField] float PickTimeScale = 0.2f;
 
     // playerVelocity: 이제 y(중력/점프) + xz(수평 모멘텀) 모두 사용
     private Vector3 playerVelocity;
@@ -25,23 +29,67 @@ public class PlayerController : MonoBehaviour
     private void Awake()
     {
         cc = GetComponent<CharacterController>();
-        move.action.Enable();
-        jump.action.Enable();
+        
     }
 
-    void Start()
+    private void OnEnable()
     {
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        move.action.Enable();
+        jump.action.Enable();
+        pick.action.Enable();
     }
 
     private void OnDisable()
     {
         move.action.Disable();
         jump.action.Disable();
+        pick.action.Disable();
     }
 
     void Update()
+    {
+        PlayerControll();
+        
+        if(!pick.action.IsPressed())
+        {
+            LockCursor();
+            Time.timeScale = 1f;
+        }
+        else
+        {
+            UnlockCursor();
+            Time.timeScale = PickTimeScale;
+        }
+    }
+
+    private void LateUpdate()
+    {
+        if (!pick.action.IsPressed())
+        {
+            PlayerRot();
+            playerCam.GetComponent<CinemachineInputAxisController>().enabled = true;
+            Time.timeScale = 1f;
+        }
+        else
+        {
+            playerCam.GetComponent<CinemachineInputAxisController>().enabled = false;
+            Time.timeScale = 0.2f;  
+        }
+    }
+
+    #region 플레이어 조작 메서드
+    void PlayerRot()
+    {
+        if (playerCam == null) return;
+
+        transform.rotation = Quaternion.Euler(
+            playerCam.transform.rotation.x,
+            playerCam.transform.rotation.y,
+            transform.rotation.z
+        );
+    }
+
+    void PlayerControll()
     {
         bool wasGrounded = isGrounded;
         isGrounded = cc.isGrounded;
@@ -97,14 +145,16 @@ public class PlayerController : MonoBehaviour
             playerVelocity.y = -2f;
     }
 
-    private void LateUpdate()
+    void LockCursor()
     {
-        if (playerCam == null) return;
-
-        transform.rotation = Quaternion.Euler(
-            playerCam.transform.rotation.x,
-            playerCam.transform.rotation.y,
-            transform.rotation.z
-        );
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
     }
+
+    void UnlockCursor()
+    {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+    }
+    #endregion
 }

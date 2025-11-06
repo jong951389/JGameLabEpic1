@@ -34,9 +34,18 @@
                     "initialStateCheck": true
                 },
                 {
-                    "name": "Fire",
+                    "name": "MouseLeft",
                     "type": "Button",
                     "id": "176cac22-173f-41ae-9727-d117f141163a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
+                    "name": "Pick",
+                    "type": "Button",
+                    "id": "9e470bf1-4266-487a-ad56-45b3d9d2f418",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -128,7 +137,18 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Fire",
+                    "action": "MouseLeft",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "b036c15e-833e-4e19-b92d-6b70560f7a05",
+                    "path": "<Keyboard>/alt",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Pick",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
