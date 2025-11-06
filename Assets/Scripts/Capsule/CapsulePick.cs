@@ -1,7 +1,6 @@
-
-using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 public class CapsulePick : MonoBehaviour
 {
@@ -10,6 +9,7 @@ public class CapsulePick : MonoBehaviour
     [Header("Pick")]
     [SerializeField] InputActionReference mouseLeftAction;
     [SerializeField] private Gun gun;
+    [SerializeField] List<Transform> slots = new List<Transform>();
 
     public GameObject pickedObject;
     private Camera mainCamera;
@@ -53,7 +53,11 @@ public class CapsulePick : MonoBehaviour
     private void OnPick(InputAction.CallbackContext context)
     {
         Ray ray = mainCamera.ScreenPointToRay(Mouse.current.position.ReadValue());
-        if (Physics.Raycast(ray, out RaycastHit hit))
+
+        // "모든 레이어에서 6번만 제외"하는 마스크
+        int layerMask = ~(1 << 6);
+
+        if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity, layerMask))
         {
             if (hit.collider.gameObject.layer == 3)
             {
@@ -68,7 +72,14 @@ public class CapsulePick : MonoBehaviour
     {
         if (pickedObject != null)
         {
-            pickedObject.transform.position = originalPosition;
+            Transform emptySlot = null;
+
+            for(int i = 0;i < slots.Count ; i++)
+            {
+                if(!slots[i].GetComponent<CapsuleSlot>().isFilled) emptySlot = slots[i];
+            }
+
+            pickedObject.transform.position = emptySlot.position;
             pickedObject = null;
         }
     }
