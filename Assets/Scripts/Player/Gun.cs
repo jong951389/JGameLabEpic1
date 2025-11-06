@@ -57,9 +57,13 @@ public class Gun : MonoBehaviour
             // 화면 정중앙에서 레이를 생성합니다.
             Ray ray = Camera.main.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
 
+            // Layer 7을 무시하기 위한 마스크 설정
+            int layerToIgnore = 1 << 7;
+            int layerMask = ~layerToIgnore; // 7번 레이어만 제외한 모든 레이어 탐지
+
             // 레이캐스트를 발사하고, 부딪힌 오브젝트 정보를 hit 변수에 저장합니다.
             Debug.DrawRay(ray.origin, ray.direction * maxFireDistance, Color.red, 1f);
-            if (Physics.Raycast(ray, out RaycastHit hit, maxFireDistance))
+            if (Physics.Raycast(ray, out RaycastHit hit, maxFireDistance, layerMask))
             {
                 if(gunstate == GunState.red && hit.collider.name.Contains("Red")) Destroy(hit.collider.gameObject);
                 else if(gunstate == GunState.green && hit.collider.name.Contains("Green")) Destroy(hit.collider.gameObject);

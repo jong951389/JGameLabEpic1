@@ -1,34 +1,39 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody), typeof(Collider))]
 public class Enemy : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 10.0f;
-    GameObject player;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    Transform player;
+    Rigidbody rb;
+
+    void Awake()
+    {
+        rb = GetComponent<Rigidbody>();
+        rb.isKinematic = true;                                   // CC와 안정적으로 충돌
+        rb.interpolation = RigidbodyInterpolation.Interpolate;   // 부드러운 이동
+        // 콜라이더(박스/캡슐)는 isTrigger = false 로 두세요.
+    }
+
     void Start()
     {
-        player = GameObject.Find("Player");
+        var p = GameObject.Find("Player");
+        if (p != null) player = p.transform;
     }
 
-    // Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        transform.position =  Vector3.MoveTowards(transform.position, player.transform.position, moveSpeed*Time.deltaTime);
-    }
+        if (!player) return;
 
-    private void OnCollisionEnter(Collision other)
-    {
-        if (other.gameObject == player)
-        {
-            CharacterController playerController = other.transform.GetComponent<CharacterController>();
-            if (playerController != null)
-            {
-                Vector3 pushDirection = (other.transform.position - transform.position).normalized;
-                float pushPower = 2.0f; // Adjust this value as needed
-                playerController.Move(pushDirection * pushPower);
-            }
-        }
-    }
+        // 수평 방향으로만 추적
+        Vector3 pos = rb.position;
+        Vector3 target = player.position;
+        target.y = pos.y;
 
+        Vector3 dir = (target - pos).normalized;
+        Vector3 next = pos + dir * moveSpeed * Time.fixedDeltaTime;
+
+        rb.MovePosition(next); // 물리 쿼리 갱신과 함께 이동 (Transform.position 직접 세팅 금지)
+    }
 }
