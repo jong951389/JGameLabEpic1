@@ -2,16 +2,12 @@ using UnityEngine;
 
 public class Boss : MonoBehaviour
 {
-    [SerializeField] float detectDistance = 10f;
     GameObject player;
+    [SerializeField] float firstDetectDistance =25f;
+
     private void Awake()
     {
         player = GameObject.Find("Player");
-    }
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
     }
 
     // Update is called once per frame
@@ -22,9 +18,6 @@ public class Boss : MonoBehaviour
             Destroy(gameObject);
         }
 
-        if (Vector3.Distance(transform.position, player.transform.position) < detectDistance)
-        {
-            GetComponent<Enemy>().enabled = true;
-        }
+        if (Vector3.Distance(transform.position, player.transform.position) < firstDetectDistance) GetComponent<Enemy>().enabled = true;
     }
 }

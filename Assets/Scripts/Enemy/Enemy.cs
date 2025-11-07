@@ -4,6 +4,7 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     [SerializeField] float moveSpeed = 10.0f;
+    [SerializeField] float detectDistance = 10.0f;
 
     Transform player;
     Rigidbody rb;
@@ -25,6 +26,8 @@ public class Enemy : MonoBehaviour
     void FixedUpdate()
     {
         if (!player) return;
+
+        if (Vector3.Distance(transform.position, player.position) > detectDistance) return;
 
         // 수평 방향으로만 추적
         Vector3 pos = rb.position;
