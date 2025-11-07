@@ -152,7 +152,7 @@ public class PlayerController : MonoBehaviour
         // 한 번의 Move로 이동 (수평+수직+외부 힘)
         cc.Move((playerVelocity + externalMove) * Time.deltaTime);
 
-        // 🔸 정지 중에도 '닿았으면' 넉백: CC 캡슐과 겹침 폴링
+        //정지 중에도 '닿았으면' 넉백: CC 캡슐과 겹침 폴링
         if (Time.time >= _pushCooldownUntil)
         {
             Bounds b = cc.bounds;
